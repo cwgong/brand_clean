@@ -1,0 +1,251 @@
+#!/usr/bin/env python
+#coding=utf-8
+
+import sys
+import os
+import re
+import unicodedata
+
+APPOINT_BRAND_RECALL_FILE = "brand_recall_info_4.txt"
+
+def s_name_dealing(ori_name):
+    s_name = re.sub(r"[\s]+", " ", ori_name)
+    s_name = s_name.lower()
+    return s_name
+
+def line_deal(line, bug_s, right_brand):
+    line = line.strip()
+    lst1 = line.split('\x01')
+    if len(lst1) != 3:
+        return None
+
+    sid, ori_name, sbrand = lst1
+    s_name = s_name_dealing(ori_name)
+    sbrand = sbrand.strip()
+
+    if sbrand == bug_s:
+        return s_name + "|" + right_brand
+    else:
+        return None
+
+def brand_stat_simple(input_p, output_p):
+    if not os.path.exists(input_p):
+        sys.exit(-1)
+    b_dict = {}
+    with open(input_p) as f2:
+        for line in f2:
+            line = line.strip()
+            if line == "": continue
+            lst1 = line.split("\x01")
+            if len(lst1) != 3:
+                continue
+            s_id, ori_name, s_brand = lst1
+            s_brand = s_brand.strip()
+            if s_brand in b_dict:
+                b_dict[s_brand] = b_dict[s_brand] + 1
+            else:
+                b_dict[s_brand] = 1
+    lst2 = [(k, v) for k, v in b_dict.items()]
+    lst2 = sorted(lst2, key=lambda x: x[1], reverse=True)
+
+    lst2 = ["%s\t%s" % tmp for tmp in lst2]
+    with open(output_p, 'w') as f3:
+        f3.write("\n".join(lst2))
+        f3.flush()
+
+def brand_clean(b_str):
+    s1 = b_str.replace("【", ' ').replace("】", ' ') \
+        .replace("（"," ").replace("）", " ") \
+        .replace("(", " ").replace(")", " ")
+
+    s1 = re.sub(r"[\s]+", " ", s1)
+    # 繁体转简体
+    #s1 = Converter('zh-hans').convert(s1)
+    return s1
+
+def brand_dealing(b_name):
+    b_name = b_name.replace("|", " ")
+    brand = re.sub(r"[\s]+", " ", b_name.lower())
+    lst1 = brand.split('/')
+    lst1 = [tmp.strip() for tmp in lst1]
+    r_set = set()
+
+    for tmp in lst1:
+        tmp = tmp.replace("（",")").replace("（", ")")
+        lst2 = tmp.split("(")
+        if len(lst2) > 1:
+            r_set.add(lst2[0])
+        else:
+            r_set.add(tmp)
+    return r_set
+
+
+def getting_special_brand_dict(brand_file):
+    special_brand_dict = {}
+    with open(brand_file) as f1:
+        for line in f1:
+            line = line.strip()
+            if line == "": continue
+            # brand_id, brand_name, cat1_id, cat1, gmv
+            lst1 = line.split("\t")
+            if len(lst1) != 2:
+                continue
+            lst1 = [tmp.strip() for tmp in lst1]
+            b_id, b_name = lst1
+            special_brand_dict[b_id] = b_name
+    return special_brand_dict
+
+def getting_recall_brand_dict(brand_file):
+    """
+    该文件建立扩展品牌的字典
+    :param brand_file:
+    :return:
+    """
+    recall_brand_dict = {}
+    with open(brand_file,"r",encoding="utf-8") as f1:
+        for line in f1:
+            line = line.strip()
+            if line == "": continue
+            # brand_id, brand_name, cat1_id, cat1, gmv
+            lst1 = line.split("\t")
+            if len(lst1) != 2:
+                continue
+            lst1 = [tmp.strip() for tmp in lst1]
+            b_id, b_name = lst1
+            recall_brand_dict[b_id] = b_name
+    return recall_brand_dict
+
+def is_own_eng(strs):
+    for _char in strs:
+        if not '\u4e00' <= _char <= '\u9fa5':
+            return True
+    return False
+
+def is_all_eng(strs):
+    for _char in strs:
+        if '\u4e00' <= _char <= '\u9fa5':
+            return False
+    return True
+
+def is_all_chinese(strs):
+    for _char in strs:
+        if not '\u4e00' <= _char <= '\u9fa5':
+            return False
+    return True
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+
+    try:
+        unicodedata.numeric(s)
+        return True
+    except (TypeError, ValueError):
+        pass
+
+    return False
+
+def get_exchange_brand_pair():
+    def _brand_pair_checking(exchange_dict):
+        s1 = set(list(exchange_dict.keys()))
+        s2 = set(list(exchange_dict.values()))
+        s3 = s1 & s2
+        if len(s3) > 0:
+            return False, s3
+        else:
+            return True, None
+
+    ex_file = "exchange_brand_info.txt"
+    exchange_dict = {}
+    if not os.path.exists(ex_file):
+        raise Exception("%s does not exists!" % ex_file)
+    with open(ex_file,"r",encoding="utf-8") as f2:
+        for line in f2:
+            line = line.strip()
+            if line == "": continue
+            if line.startswith("#"): continue
+            lst1 = line.split("|")
+            if len(lst1) != 2:
+                continue
+            lst1 = [z.strip() for z in lst1]
+            k,v = lst1
+            if k not in exchange_dict and k != v:
+                exchange_dict[k] = v
+
+    # 品牌对检测
+    chk_flag, conflict_brand_set = _brand_pair_checking(exchange_dict)
+    if not chk_flag:
+        err_s = "exchang-brand-pair error: %s" % "\t".join(list(conflict_brand_set))
+        raise Exception(err_s)
+
+    return exchange_dict
+
+def appoint_brand_recall(standard_brand_file, special_brand_file, \
+                         output_file=APPOINT_BRAND_RECALL_FILE):
+    """
+    gcw 2020-09-28
+    :param standard_brand_file:
+    :param special_brand_file:
+    :param output_file:
+    :return:
+    """
+    ex_brand_dict = get_exchange_brand_pair()
+
+    special_brand_list = []
+    with open(special_brand_file,"r",encoding="utf-8") as f1:
+        for line in f1:
+            line = line.strip()
+            if line == "": continue
+            # brand_id, brand_name, cat1_id, cat1, gmv
+            lst1 = line.split("\t")
+            if len(lst1) != 2:
+                continue
+            lst1 = [tmp.strip() for tmp in lst1]
+            b_id, b_name = lst1
+            if b_name in ex_brand_dict:
+                b_name = ex_brand_dict[b_name]
+            b_name = brand_clean(b_name.lower())
+            special_brand_list.append(b_name)
+
+    recall_brand_dict = {}
+    with open(standard_brand_file,"r",encoding="utf-8") as f1:
+        for line in f1:
+            line = line.strip()
+            if line == "":continue
+            lst1 = line.split("\t")
+            if len(lst1) != 5:
+                continue
+            lst1 = [tmp.strip() for tmp in lst1]
+            b_id, b_name, cat1_id, cat1, gmv = lst1
+            if b_id == "10641720":
+                print(b_name)
+            if b_id == "10229325":
+                print(b_name)
+            if b_id == "10790978":
+                print(b_name)
+            if b_id == "10944780":
+                print(b_name)
+            b_name = brand_clean(b_name.lower())
+            for s_name in special_brand_list:
+                s_name_list = s_name.strip().split("/")
+                for s_name_item in s_name_list:
+                    if len(b_name.split(s_name_item)) > 1:
+                        #单个“后”字召回的品牌错误率很高
+                        if s_name_item == "后":
+                            continue
+                        recall_brand_dict[line] = ''
+
+    with open(output_file, "w", encoding="utf-8") as f1:
+        f1.write("\n".join(list(recall_brand_dict.keys())))
+        f1.flush()
+
+def multi_blank_clean(s1):
+    return re.sub(r"[\s]+", "", s1)
+
+standard_brand_file = "standard_brand_info.txt"
+special_brand_file = "xiaowu_standard_brand.txt"
+appoint_brand_recall(standard_brand_file, special_brand_file, \
+                         output_file=APPOINT_BRAND_RECALL_FILE)

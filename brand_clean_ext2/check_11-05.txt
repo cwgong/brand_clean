@@ -1,0 +1,117 @@
+#
+Teenie Weenie	131
+HSTYLE/韩都衣舍	103
+PZH/片仔癀	103
+Deli/得力	84
+衣香丽影	81
+森然（家电）	79
+Cabbeen/卡宾	78
+NEW BALANCE	77
+pinkypinky/缤肌	76
+ZEESEA	76
+A21	75
+周大福	75
+宝宝馋了	71
+CHAMPION	70
+Warrior/回力	66
+CHANDO/自然堂	61
+恒源祥	54
+HYUNDAI/现代	52
+Huawei/华为	46
+Moutai/茅台	46
+lovo	44
+Malata/万利达	12
+Fila/斐乐	12
+vivo	12
+HR/赫莲娜	12
+周生生	12
+LEWITT/莱维特	11
+葡记	11
+HRL/哈肉联	11
+Amii	10
+Panasonic/松下	10
+可复美	10
+网易严选	10
+
+#
+ROYAL CANIN/皇家	44
+boylondon	43
+Mistine	43
+来伊份	40
+博洋	39
+Tata/他她	36
+Goldfarm/高梵	34
+Royalstar/荣事达	33
+Olay/玉兰油	33
+药都仁和	32
+自嗨锅	30
+海底捞	30
+韩佳妮	30
+Eifini/伊芙丽	29
+CPB	28
+红色小象	27
+JOMOO/九牧	26
+卜珂零点	25
+阿芙	25
+BASTO/百思图	22
+好想你	22
+Belle/百丽	22
+Shu-uemura/植村秀	20
+Firs/杉杉	20
+Robam/老板	20
+陶陶居	20
+乔丹	19
+贵人鸟	19
+泡小燕	19
+SUNSSHEN/圣蜜莱雅	19
+Michael Kors	19
+
+#
+Paul Frank/大嘴猴	747
+伊自尚	608
+Girdear/哥弟	457
+Hodo/红豆	322
+one more	292
+Xiaomi/小米	264
+Apple/苹果	230
+MLB	204
+Puma/彪马	176
+Bear/小熊	175
+St&Sat/星期六	165
+CHARLES&KEITH	156
+ELF SACK/妖精的口袋	132
+honor/荣耀	19
+UKIWI/纽西小精灵	18
+Herborist/佰草集	18
+LITTLEYOUNGER/小养	18
+KERASTASE/卡诗	18
+Tom Ford/汤姆福特	18
+HP/惠普	17
+Banila CO/芭妮兰	16
+Amos/亚摩斯	15
+Pigeon/贝亲	15
+Onitsuka Tiger/鬼塚虎	15
+wonderlab	15
+jiahua food/嘉华	15
+beiens/贝恩施	14
+满婷	14
+Bosideng/波司登	13
+REDDRAGONFLY/红蜻蜓	13
+wis	13
+TSINGTAO/青岛啤酒	13
+Coca－Cola/可口可乐	12
+ERAL/艾莱依	12
+三彩	12
+
+#
+初心
+斯凯奇
+Bosideng/波司登
+良品铺子
+Gree/格力
+red earth/红地球
+Panasonic/松下
+葡记
+OBBLIGATO/奥丽嘉朵
+babycare
+Amoi/夏新

@@ -1,0 +1,9 @@
+import unittest
+from brand_reg_tool import BrandRegTool
+import configparser
+
+bReg = BrandRegTool("brand_recall_info.txt", "del_brand_info.txt", "exchange_brand_info.txt", "rule_brand.cfg")
+config = configparser.ConfigParser()
+config.read("utest_online_data_update.cfg", encoding="utf-8")
+
+class TestBrandRegTool(unittest.TestCase):
